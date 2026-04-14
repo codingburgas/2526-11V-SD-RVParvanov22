@@ -1,14 +1,15 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace MicrobloggingSystem.Models
 {
-    public class Follow
+    public class Follow : BaseEntity
     {
-        public int Id { get; set; }
-
         // Foreign keys
+        [Required]
         public string FollowerId { get; set; } = string.Empty;
-        public string FollowingId { get; set; } = string.Empty;
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        [Required]
+        public string FollowingId { get; set; } = string.Empty;
 
         // Navigation properties
         public ApplicationUser? Follower { get; set; }

@@ -1,0 +1,20 @@
+.card {
+    border-radius: 1rem;
+    box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.08);
+}
+
+body {
+    background: #f4f7fb;
+}
+
+.navbar-brand {
+    font-weight: 700;
+}
+
+.form-label {
+    font-weight: 600;
+}
+
+.text-danger {
+    font-size: 0.9rem;
+}

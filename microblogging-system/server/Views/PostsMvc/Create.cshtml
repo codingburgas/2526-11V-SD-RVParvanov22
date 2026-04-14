@@ -1,0 +1,22 @@
+@model MicrobloggingSystem.Models.DTOs.CreatePostDto
+
+<h1 class="mb-4">Create New Post</h1>
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="Content" class="form-label"></label>
+        <textarea asp-for="Content" class="form-control" rows="4" maxlength="280"></textarea>
+        <div class="form-text">Max 280 characters.</div>
+        <span asp-validation-for="Content" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="PostType" class="form-label"></label>
+        <input asp-for="PostType" class="form-control" placeholder="General, Announcement, Question" />
+        <span asp-validation-for="PostType" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Submit</button>
+</form>

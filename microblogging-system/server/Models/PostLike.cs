@@ -1,10 +1,11 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace MicrobloggingSystem.Models
 {
-    public class PostLike
+    public class PostLike : BaseEntity
     {
-        public int Id { get; set; }
-
         // Foreign keys
+        [Required]
         public string UserId { get; set; } = string.Empty;
         public int PostId { get; set; }
 

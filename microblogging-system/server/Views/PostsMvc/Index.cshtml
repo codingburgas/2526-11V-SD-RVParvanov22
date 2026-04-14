@@ -1,0 +1,31 @@
+@model IEnumerable<MicrobloggingSystem.Models.DTOs.PostResponseDto>
+
+<h1 class="mb-4">All Posts</h1>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">There are no posts yet. Create the first one.</div>
+}
+else
+{
+    foreach (var post in Model)
+    {
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5>@post.UserDisplayName</h5>
+                        <p class="text-muted mb-1">@post.CreatedAt.ToLocalTime().ToString("g")</p>
+                    </div>
+                    <span class="badge bg-secondary">@post.PostType ?? "General"</span>
+                </div>
+                <p>@post.Content</p>
+                <div class="d-flex justify-content-between small text-muted">
+                    <span>@post.CommentsCount comments</span>
+                    <span>@post.LikesCount likes</span>
+                </div>
+                <a class="btn btn-primary btn-sm mt-3" asp-action="Details" asp-route-id="@post.Id">View</a>
+            </div>
+        </div>
+    }
+}

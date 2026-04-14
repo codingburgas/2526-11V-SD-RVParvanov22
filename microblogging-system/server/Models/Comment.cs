@@ -1,12 +1,15 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace MicrobloggingSystem.Models
 {
-    public class Comment
+    public class Comment : BaseEntity
     {
-        public int Id { get; set; }
+        [Required]
+        [StringLength(280, ErrorMessage = "Comment must be 280 characters or less")]
         public string Content { get; set; } = string.Empty;
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         // Foreign keys
+        [Required]
         public string UserId { get; set; } = string.Empty;
         public int PostId { get; set; }
 

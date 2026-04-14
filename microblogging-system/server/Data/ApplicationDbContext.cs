@@ -15,8 +15,6 @@ namespace MicrobloggingSystem.Data
         public DbSet<Comment> Comments => Set<Comment>();
         public DbSet<PostLike> PostLikes => Set<PostLike>();
         public DbSet<Follow> Follows => Set<Follow>();
-        public DbSet<GameProfile> GameProfiles => Set<GameProfile>();
-        public DbSet<MatchEntry> MatchEntries => Set<MatchEntry>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -67,19 +65,6 @@ namespace MicrobloggingSystem.Data
                 .WithMany(u => u.Followers)
                 .HasForeignKey(f => f.FollowingId)
                 .OnDelete(DeleteBehavior.Restrict);
-
-            // GameProfile configuration
-            modelBuilder.Entity<GameProfile>()
-                .HasOne(gp => gp.User)
-                .WithMany(u => u.GameProfiles)
-                .HasForeignKey(gp => gp.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<GameProfile>()
-                .HasMany(gp => gp.MatchEntries)
-                .WithOne(me => me.GameProfile)
-                .HasForeignKey(me => me.GameProfileId)
-                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

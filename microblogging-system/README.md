@@ -1,29 +1,20 @@
 # Microblogging System
 
-A full-stack microblogging application with React frontend and ASP.NET Core backend.
+A simple microblogging application built with ASP.NET Core MVC and Entity Framework Core.
 
 ## Project Structure
 
-- `client/`: React frontend
-- `server/`: ASP.NET Core backend
+- `server/`: ASP.NET Core backend with Razor views
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js
-- .NET 6.0
+- .NET 6.0 or later
 
 ### Running the Application
 
-1. Navigate to the client directory and install dependencies:
-   ```
-   cd client
-   npm install
-   npm start
-   ```
-
-2. Navigate to the server directory and run the backend:
+1. Navigate to the server directory and run the application:
    ```
    cd server
    dotnet run

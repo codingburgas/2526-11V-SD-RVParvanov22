@@ -1,0 +1,23 @@
+@model MicrobloggingSystem.Models.DTOs.UpdatePostDto
+
+<h1 class="mb-4">Edit Post</h1>
+
+<form asp-action="Edit" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" name="id" value="@ViewBag.PostId" />
+
+    <div class="mb-3">
+        <label asp-for="Content" class="form-label"></label>
+        <textarea asp-for="Content" class="form-control" rows="4" maxlength="280"></textarea>
+        <div class="form-text">Max 280 characters.</div>
+        <span asp-validation-for="Content" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="PostType" class="form-label"></label>
+        <input asp-for="PostType" class="form-control" />
+        <span asp-validation-for="PostType" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Save changes</button>
+</form>

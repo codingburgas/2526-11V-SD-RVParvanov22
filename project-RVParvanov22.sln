@@ -1,0 +1,32 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "microblogging-system", "microblogging-system", "{3D30B5BB-8C7C-0ABE-0CE2-58790F35A5CD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "server", "server", "{29F27F9D-3D87-3B2B-4A2E-01207B9AA557}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicrobloggingSystem", "microblogging-system\server\MicrobloggingSystem.csproj", "{31C32640-3508-D6C4-05D7-16BB47E8B850}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{31C32640-3508-D6C4-05D7-16BB47E8B850}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31C32640-3508-D6C4-05D7-16BB47E8B850}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31C32640-3508-D6C4-05D7-16BB47E8B850}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31C32640-3508-D6C4-05D7-16BB47E8B850}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{29F27F9D-3D87-3B2B-4A2E-01207B9AA557} = {3D30B5BB-8C7C-0ABE-0CE2-58790F35A5CD}
+		{31C32640-3508-D6C4-05D7-16BB47E8B850} = {29F27F9D-3D87-3B2B-4A2E-01207B9AA557}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1A0CD5BD-CCF3-4BFE-AA64-3C523A623378}
+	EndGlobalSection
+EndGlobal

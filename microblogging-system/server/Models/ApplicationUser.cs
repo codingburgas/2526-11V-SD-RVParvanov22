@@ -14,7 +14,6 @@ namespace MicrobloggingSystem.Models
         public ICollection<Post>? Posts { get; set; }
         public ICollection<Comment>? Comments { get; set; }
         public ICollection<PostLike>? PostLikes { get; set; }
-        public ICollection<GameProfile>? GameProfiles { get; set; }
         
         // Follows - users that this user follows
         public ICollection<Follow>? Following { get; set; }

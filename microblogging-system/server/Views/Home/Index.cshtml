@@ -1,0 +1,31 @@
+@model MicrobloggingSystem.Models.ViewModels.HomeViewModel
+
+<h1 class="mb-4">Microblog Feed</h1>
+
+@if (!Model.Posts.Any())
+{
+    <div class="alert alert-info">No posts are available yet. Register and create your first post.</div>
+}
+else
+{
+    foreach (var post in Model.Posts)
+    {
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">@post.UserDisplayName</h5>
+                        <p class="text-muted mb-1">@post.CreatedAt.ToLocalTime().ToString("g")</p>
+                    </div>
+                    <span class="badge bg-secondary">@post.PostType ?? "General"</span>
+                </div>
+                <p class="card-text">@post.Content</p>
+                <div class="d-flex justify-content-between small text-muted">
+                    <span>@post.CommentsCount comments</span>
+                    <span>@post.LikesCount likes</span>
+                </div>
+                <a class="btn btn-sm btn-primary mt-3" asp-controller="PostsMvc" asp-action="Details" asp-route-id="@post.Id">View post</a>
+            </div>
+        </div>
+    }
+}
