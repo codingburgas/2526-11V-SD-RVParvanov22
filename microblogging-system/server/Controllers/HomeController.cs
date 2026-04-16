@@ -95,11 +95,10 @@ namespace MicrobloggingSystem.Controllers
                 .OrderByDescending(p => (p.Comments!.Count + p.PostLikes!.Count))
                 .FirstOrDefaultAsync();
 
-            var averagePosts = await _context.Posts
-                .GroupBy(p => p.UserId)
-                .Select(g => g.Count())
-                .DefaultIfEmpty(0)
-                .AverageAsync();
+            // Calculate average posts per user
+            var totalPosts = await _context.Posts.CountAsync();
+            var totalUsers = await _context.Users.CountAsync();
+            var averagePosts = totalUsers > 0 ? (double)totalPosts / totalUsers : 0;
 
             var model = new ReportsViewModel
             {

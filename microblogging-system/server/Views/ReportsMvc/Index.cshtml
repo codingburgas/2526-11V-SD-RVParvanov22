@@ -1,0 +1,104 @@
+@model IEnumerable<MicrobloggingSystem.Models.DTOs.ReportResponseDto>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/feed.css" asp-append-version="true" />
+}
+
+<h1 class="mb-4 feed-page-title">Reports Management</h1>
+
+<div class="mb-3">
+    <a asp-action="Pending" class="btn btn-warning">
+        Pending Reports (@ViewBag.PendingCount)
+    </a>
+    <a asp-action="Index" class="btn btn-outline-secondary">All Reports</a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No reports found.</div>
+}
+else
+{
+    <div class="reports-list">
+        @foreach (var report in Model)
+        {
+            <div class="card mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>Report #@report.Id</strong> -
+                        <span class="badge bg-@(report.Status == ReportStatus.Pending ? "warning" : report.Status == ReportStatus.Reviewed ? "success" : "secondary")">
+                            @report.Status
+                        </span>
+                    </div>
+                    <small class="text-muted">@report.CreatedAt.ToLocalTime().ToString("g")</small>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h6>Reported Post:</h6>
+                            <p class="mb-2"><em>"@report.PostContent"</em></p>
+                            <small class="text-muted">By: @report.PostAuthorDisplayName | Game: @report.PostGameTitle</small>
+
+                            <h6 class="mt-3">Report Details:</h6>
+                            <p><strong>Reason:</strong> @report.Reason</p>
+                            @if (!string.IsNullOrWhiteSpace(report.Description))
+                            {
+                                <p><strong>Description:</strong> @report.Description</p>
+                            }
+                            <p><strong>Reported by:</strong> @report.ReporterDisplayName</p>
+                        </div>
+                        <div class="col-md-4">
+                            @if (report.Status == ReportStatus.Pending)
+                            {
+                                <h6>Actions:</h6>
+                                <form asp-action="Review" method="post" class="d-inline">
+                                    <input type="hidden" name="id" value="@report.Id" />
+                                    <div class="mb-2">
+                                        <select name="status" class="form-select form-select-sm" required>
+                                            <option value="Reviewed">Mark as Reviewed</option>
+                                            <option value="Resolved">Mark as Resolved</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-2">
+                                        <select name="action" class="form-select form-select-sm" required>
+                                            <option value="None">No Action</option>
+                                            <option value="WarningSent">Warning Sent</option>
+                                            <option value="Hidden">Content Hidden</option>
+                                            <option value="Deleted">Content Deleted</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-success btn-sm">Submit Review</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <h6>Review Info:</h6>
+                                <p><strong>Reviewed by:</strong> @report.ReviewerDisplayName</p>
+                                <p><strong>Action taken:</strong> @report.ActionTaken</p>
+                                @if (report.ReviewedAt.HasValue)
+                                {
+                                    <p><strong>Reviewed at:</strong> @report.ReviewedAt.Value.ToLocalTime().ToString("g")</p>
+                                }
+                            }
+
+                            <div class="mt-2">
+                                <a asp-action="Details" asp-route-id="@report.Id" class="btn btn-outline-primary btn-sm">View Details</a>
+                                <form asp-action="Delete" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this report?')">
+                                    <input type="hidden" name="id" value="@report.Id" />
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">Delete Report</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@if (TempData["Message"] != null)
+{
+    <script>
+        alert('@TempData["Message"]');
+    </script>
+}

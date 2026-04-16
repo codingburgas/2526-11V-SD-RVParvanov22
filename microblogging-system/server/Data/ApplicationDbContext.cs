@@ -15,6 +15,7 @@ namespace MicrobloggingSystem.Data
         public DbSet<Comment> Comments => Set<Comment>();
         public DbSet<PostLike> PostLikes => Set<PostLike>();
         public DbSet<Follow> Follows => Set<Follow>();
+        public DbSet<Report> Reports => Set<Report>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -65,6 +66,25 @@ namespace MicrobloggingSystem.Data
                 .WithMany(u => u.Followers)
                 .HasForeignKey(f => f.FollowingId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // Report configuration
+            modelBuilder.Entity<Report>()
+                .HasOne(r => r.Post)
+                .WithMany()
+                .HasForeignKey(r => r.PostId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Report>()
+                .HasOne(r => r.Reporter)
+                .WithMany()
+                .HasForeignKey(r => r.ReporterId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Report>()
+                .HasOne(r => r.Reviewer)
+                .WithMany()
+                .HasForeignKey(r => r.ReviewedBy)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

@@ -115,6 +115,13 @@
                                 <i class="fas fa-edit"></i>
                                 <span>Drafts</span>
                             </a>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a asp-controller="ReportsMvc" asp-action="Index" class="topbar-link">
+                                    <i class="fas fa-flag"></i>
+                                    <span>Reports</span>
+                                </a>
+                            }
                             <a asp-controller="Account" asp-action="Profile" class="topbar-link">
                                 <i class="fas fa-user"></i>
                                 <span>Profile</span>

@@ -55,6 +55,13 @@
                     </button>
                 </form>
             }
+
+            @if (!Model.IsOwnPost)
+            {
+                <button type="button" class="btn btn-outline-warning btn-sm" data-bs-toggle="modal" data-bs-target="#reportModal">
+                    Report
+                </button>
+            }
         }
 
         @if (Model.IsOwnPost)
@@ -106,3 +113,40 @@
         <div class="feed-empty mt-4">Please <a asp-controller="Account" asp-action="Login">login</a> to comment.</div>
     }
 </section>
+
+<!-- Report Modal -->
+<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reportModalLabel">Report Post</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-controller="ReportsApi" asp-action="Create" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="PostId" value="@Model.Post.Id" />
+                    <div class="mb-3">
+                        <label for="Reason" class="form-label">Reason for reporting</label>
+                        <select name="Reason" class="form-select" required>
+                            <option value="">Select a reason</option>
+                            <option value="Spam">Spam</option>
+                            <option value="Harassment">Harassment</option>
+                            <option value="InappropriateContent">Inappropriate Content</option>
+                            <option value="HateSpeech">Hate Speech</option>
+                            <option value="CopyrightViolation">Copyright Violation</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="Description" class="form-label">Additional details (optional)</label>
+                        <textarea name="Description" class="form-control" rows="3" maxlength="500" placeholder="Please provide more details about why you're reporting this post..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-warning">Submit Report</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
