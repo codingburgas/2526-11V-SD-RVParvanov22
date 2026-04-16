@@ -12,6 +12,7 @@
 }
 else
 {
+    var currentUserId = ViewBag.CurrentUserId as string;
     foreach (var post in Model)
     {
         <article class="feed-card">
@@ -38,7 +39,18 @@ else
                 <span>@post.CommentsCount comments</span>
                 <span>@post.LikesCount likes</span>
             </div>
-            <a class="btn btn-primary btn-sm mt-3" asp-action="Details" asp-route-id="@post.Id">View</a>
+            <div class="feed-card-actions">
+                <a class="btn btn-primary btn-sm" asp-action="Details" asp-route-id="@post.Id">View</a>
+                @if (!string.IsNullOrEmpty(currentUserId) && string.Equals(currentUserId, post.UserId, StringComparison.OrdinalIgnoreCase))
+                {
+                    <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@post.Id">Edit</a>
+                    <form asp-action="Delete" method="post" class="d-inline">
+                        <input type="hidden" name="id" value="@post.Id" />
+                        <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                    </form>
+                }
+            </div>
         </article>
     }
 }

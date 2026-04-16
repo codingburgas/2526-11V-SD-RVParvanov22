@@ -36,6 +36,7 @@ namespace MicrobloggingSystem.Controllers
         public async Task<IActionResult> Index(int pageNumber = 1)
         {
             var posts = await _postService.GetPostsAsync(pageNumber, 20);
+            ViewBag.CurrentUserId = _userManager.GetUserId(User);
             return View(posts);
         }
 
@@ -158,7 +159,7 @@ namespace MicrobloggingSystem.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id, string? returnUrl = null)
         {
             var post = await _postService.GetPostByIdAsync(id);
             if (post == null)
@@ -171,7 +172,14 @@ namespace MicrobloggingSystem.Controllers
                 return Forbid();
             }
 
+            DeleteExistingMedia(post.MediaPath);
             await _postService.DeletePostAsync(id);
+
+            if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+
             return RedirectToAction(nameof(Index));
         }
 

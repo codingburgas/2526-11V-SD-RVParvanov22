@@ -98,6 +98,15 @@ else
                             </button>
                         </form>
                     }
+                    else
+                    {
+                        <a class="btn btn-sm btn-outline-primary" asp-controller="PostsMvc" asp-action="Edit" asp-route-id="@post.Id">Edit</a>
+                        <form asp-controller="PostsMvc" asp-action="Delete" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@post.Id" />
+                            <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                        </form>
+                    }
                 }
             </div>
         </article>
