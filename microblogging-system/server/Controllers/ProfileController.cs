@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MicrobloggingSystem.Interfaces;
 using MicrobloggingSystem.Models.DTOs;
 using MicrobloggingSystem.Services;
 using System.Security.Claims;
@@ -38,7 +39,7 @@ namespace MicrobloggingSystem.Controllers
                     return Unauthorized(new { error = "Invalid token claims" });
                 }
 
-                var profile = await _userService.GetUserByIdAsync(userId);
+                var profile = await _userService.GetUserProfileAsync(userId);
                 if (profile == null)
                 {
                     return NotFound(new { error = "User profile not found" });
@@ -114,17 +115,18 @@ namespace MicrobloggingSystem.Controllers
                     return Unauthorized(new { error = "Invalid token claims" });
                 }
 
-                // Verify user exists
-                var userExists = await _userService.UserExistsAsync(userId);
-                if (!userExists)
-                {
-                    return NotFound(new { error = "User not found" });
-                }
-
-                var updatedProfile = await _userService.UpdateUserProfileAsync(userId, updateDto);
-                if (updatedProfile == null)
+                // Update user profile
+                var success = await _userService.UpdateUserProfileAsync(userId, updateDto);
+                if (!success)
                 {
                     return NotFound(new { error = "Failed to update profile" });
+                }
+
+                // Get updated profile
+                var updatedProfile = await _userService.GetUserProfileAsync(userId);
+                if (updatedProfile == null)
+                {
+                    return NotFound(new { error = "Failed to retrieve updated profile" });
                 }
 
                 _logger.LogInformation("User profile updated successfully: {UserId}", userId);

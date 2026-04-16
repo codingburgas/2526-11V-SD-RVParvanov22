@@ -60,7 +60,7 @@
         @if (Model.IsOwnPost)
         {
             <a asp-action="Edit" asp-route-id="@Model.Post.Id" class="btn btn-outline-primary btn-sm">Edit</a>
-            <form asp-action="Delete" method="post" class="d-inline">
+            <form asp-action="Delete" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this post? This action cannot be undone.')">
                 <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
             </form>
         }

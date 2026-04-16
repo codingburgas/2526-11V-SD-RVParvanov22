@@ -1,21 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using MicrobloggingSystem.Data;
+using MicrobloggingSystem.Interfaces;
 using MicrobloggingSystem.Models;
 using MicrobloggingSystem.Models.DTOs;
 
 namespace MicrobloggingSystem.Services
 {
-    /// <summary>
-    /// Service interface for user profile operations
-    /// </summary>
-    public interface IUserService
-    {
-        Task<UserProfileDto?> GetUserByIdAsync(string userId);
-        Task<UserProfileDto?> GetUserByUsernameAsync(string username);
-        Task<UserProfileDto?> UpdateUserProfileAsync(string userId, UpdateUserProfileDto updateDto);
-        Task<bool> UserExistsAsync(string userId);
-    }
-
     /// <summary>
     /// Service for user profile operations
     /// Handles profile retrieval and updates
@@ -34,7 +24,7 @@ namespace MicrobloggingSystem.Services
         /// <summary>
         /// Get user profile by UserId
         /// </summary>
-        public async Task<UserProfileDto?> GetUserByIdAsync(string userId)
+        public async Task<UserProfileDto?> GetUserProfileAsync(string userId)
         {
             try
             {
@@ -90,7 +80,7 @@ namespace MicrobloggingSystem.Services
         /// <summary>
         /// Update user profile information
         /// </summary>
-        public async Task<UserProfileDto?> UpdateUserProfileAsync(string userId, UpdateUserProfileDto updateDto)
+        public async Task<bool> UpdateUserProfileAsync(string userId, UpdateUserProfileDto updateDto)
         {
             try
             {
@@ -98,7 +88,7 @@ namespace MicrobloggingSystem.Services
                 if (user == null)
                 {
                     _logger.LogWarning("User not found for update: {UserId}", userId);
-                    return null;
+                    return false;
                 }
 
                 // Update fields
@@ -111,13 +101,7 @@ namespace MicrobloggingSystem.Services
                 await _context.SaveChangesAsync();
 
                 _logger.LogInformation("User profile updated: {UserId}", userId);
-
-                // Reload with relationships
-                await _context.Entry(user).ReloadAsync();
-                await _context.Entry(user).Collection(u => u.Following!).LoadAsync();
-                await _context.Entry(user).Collection(u => u.Followers!).LoadAsync();
-
-                return MapToUserProfileDto(user);
+                return true;
             }
             catch (Exception ex)
             {
@@ -127,11 +111,44 @@ namespace MicrobloggingSystem.Services
         }
 
         /// <summary>
-        /// Check if user exists
+        /// Search users by display name, username, or region
         /// </summary>
-        public async Task<bool> UserExistsAsync(string userId)
+        public async Task<IEnumerable<UserSearchResultDto>> SearchUsersAsync(string query, int pageNumber = 1, int pageSize = 20)
         {
-            return await _context.Users.AnyAsync(u => u.Id == userId);
+            try
+            {
+                if (string.IsNullOrWhiteSpace(query))
+                {
+                    return Enumerable.Empty<UserSearchResultDto>();
+                }
+
+                var users = await _context.Users
+                    .Include(u => u.Followers)
+                    .Where(u =>
+                        u.DisplayName.Contains(query) ||
+                        u.UserName.Contains(query) ||
+                        (u.Region != null && u.Region.Contains(query))
+                    )
+                    .OrderByDescending(u => u.CreatedAt)
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync();
+
+                return users.Select(user => new UserSearchResultDto
+                {
+                    Id = user.Id,
+                    DisplayName = user.DisplayName ?? user.UserName,
+                    ProfilePictureUrl = user.ProfilePictureUrl,
+                    Region = user.Region,
+                    FollowersCount = user.Followers?.Count ?? 0,
+                    IsFollowing = false // This would need current user context to determine
+                }).ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error searching users with query: {Query}", query);
+                throw;
+            }
         }
 
         /// <summary>

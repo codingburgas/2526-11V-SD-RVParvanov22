@@ -30,6 +30,11 @@
                     <span>Create Post</span>
                 </a>
 
+                <a asp-controller="Search" asp-action="Index" class="sidebar-nav-item">
+                    <i class="fas fa-search"></i>
+                    <span>Search</span>
+                </a>
+
                 <a asp-controller="Home" asp-action="Reports" class="sidebar-nav-item">
                     <i class="fas fa-chart-bar"></i>
                     <span>Reports</span>
@@ -90,6 +95,20 @@
                     <a asp-controller="Home" asp-action="Index" class="navbar-brand">PlayerPulse</a>
 
                     <div class="topbar-actions">
+                        <!-- Search Bar -->
+                        <form method="get" asp-controller="Search" asp-action="Index" class="d-flex me-3">
+                            <div class="input-group">
+                                <input type="text"
+                                       name="q"
+                                       class="form-control form-control-sm"
+                                       placeholder="Search..."
+                                       style="width: 200px;">
+                                <button class="btn btn-outline-light btn-sm" type="submit">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </form>
+
                         @if (User.Identity?.IsAuthenticated == true)
                         {
                             <a asp-controller="Account" asp-action="Profile" class="topbar-link">

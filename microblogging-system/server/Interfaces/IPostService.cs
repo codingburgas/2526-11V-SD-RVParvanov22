@@ -10,5 +10,6 @@ namespace MicrobloggingSystem.Interfaces
         Task<bool> UpdatePostAsync(int id, UpdatePostDto updatePostDto);
         Task<bool> DeletePostAsync(int id);
         Task<IEnumerable<PostResponseDto>> GetFeedAsync(string userId, int pageNumber, int pageSize);
+        Task<IEnumerable<PostResponseDto>> SearchPostsAsync(string query, string? gameTitle = null, string? postType = null, int pageNumber = 1, int pageSize = 20);
     }
 }

@@ -1,0 +1,139 @@
+@model IEnumerable<MicrobloggingSystem.Models.DTOs.UserSearchResultDto>
+
+@{
+    ViewData["Title"] = "Search Users";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>Search Users</h1>
+                <a href="@Url.Action("Index", "Search")" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Search
+                </a>
+            </div>
+
+            <!-- Search Form -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="get" action="@Url.Action("Users", "Search")" class="mb-0">
+                        <div class="input-group">
+                            <input type="text"
+                                   name="q"
+                                   class="form-control"
+                                   placeholder="Search users..."
+                                   value="@ViewBag.Query"
+                                   required>
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fas fa-search"></i> Search
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    @TempData["Error"]
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(ViewBag.Query))
+            {
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Users matching "@ViewBag.Query"</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (Model != null && Model.Any())
+                        {
+                            <div class="row">
+                                @foreach (var user in Model)
+                                {
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card h-100">
+                                            <div class="card-body d-flex align-items-center">
+                                                @if (!string.IsNullOrEmpty(user.ProfilePictureUrl))
+                                                {
+                                                    <img src="@user.ProfilePictureUrl"
+                                                         alt="@user.DisplayName"
+                                                         class="rounded-circle me-3"
+                                                         style="width: 50px; height: 50px; object-fit: cover;">
+                                                }
+                                                else
+                                                {
+                                                    <div class="bg-secondary rounded-circle me-3 d-flex align-items-center justify-content-center"
+                                                         style="width: 50px; height: 50px;">
+                                                        <i class="fas fa-user text-white"></i>
+                                                    </div>
+                                                }
+
+                                                <div class="flex-grow-1">
+                                                    <h6 class="mb-1">
+                                                        <a href="@Url.Action("Profile", "Account", new { id = user.Id })"
+                                                           class="text-decoration-none">
+                                                            @user.DisplayName
+                                                        </a>
+                                                    </h6>
+                                                    @if (!string.IsNullOrEmpty(user.Region))
+                                                    {
+                                                        <small class="text-muted">@user.Region</small>
+                                                    }
+                                                    <div class="mt-1">
+                                                        <small class="text-muted">
+                                                            @user.FollowersCount follower@(user.FollowersCount != 1 ? "s" : "")
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+                            <!-- Pagination -->
+                            @if (ViewBag.Page > 1 || (Model.Count() == ViewBag.PageSize))
+                            {
+                                <nav aria-label="User search pagination" class="mt-4">
+                                    <ul class="pagination justify-content-center">
+                                        @if (ViewBag.Page > 1)
+                                        {
+                                            <li class="page-item">
+                                                <a class="page-link" href="@Url.Action("Users", "Search", new { q = ViewBag.Query, page = ViewBag.Page - 1, pageSize = ViewBag.PageSize })">
+                                                    Previous
+                                                </a>
+                                            </li>
+                                        }
+
+                                        <li class="page-item active">
+                                            <span class="page-link">@ViewBag.Page</span>
+                                        </li>
+
+                                        @if (Model.Count() == ViewBag.PageSize)
+                                        {
+                                            <li class="page-item">
+                                                <a class="page-link" href="@Url.Action("Users", "Search", new { q = ViewBag.Query, page = ViewBag.Page + 1, pageSize = ViewBag.PageSize })">
+                                                    Next
+                                                </a>
+                                            </li>
+                                        }
+                                    </ul>
+                                </nav>
+                            }
+                        }
+                        else
+                        {
+                            <div class="text-center py-4">
+                                <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted">No users found</h5>
+                                <p class="text-muted">Try adjusting your search terms.</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

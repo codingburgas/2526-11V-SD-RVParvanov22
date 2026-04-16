@@ -28,4 +28,14 @@ namespace MicrobloggingSystem.Models.DTOs
 
         public string? Region { get; set; }
     }
+
+    public class UserSearchResultDto
+    {
+        public string Id { get; set; } = string.Empty;
+        public string DisplayName { get; set; } = string.Empty;
+        public string? ProfilePictureUrl { get; set; }
+        public string? Region { get; set; }
+        public int FollowersCount { get; set; }
+        public bool IsFollowing { get; set; }
+    }
 }

@@ -119,6 +119,43 @@ namespace MicrobloggingSystem.Services
             return posts.Select(post => ToDto(post)).ToList();
         }
 
+        public async Task<IEnumerable<PostResponseDto>> SearchPostsAsync(string query, string? gameTitle = null, string? postType = null, int pageNumber = 1, int pageSize = 20)
+        {
+            var postsQuery = _context.Posts
+                .Include(p => p.User)
+                .Include(p => p.Comments)
+                .Include(p => p.PostLikes)
+                .AsQueryable();
+
+            // Apply search filters
+            if (!string.IsNullOrWhiteSpace(query))
+            {
+                postsQuery = postsQuery.Where(p =>
+                    p.Content.Contains(query) ||
+                    p.GameTitle.Contains(query) ||
+                    (p.User != null && (p.User.DisplayName.Contains(query) || p.User.UserName.Contains(query)))
+                );
+            }
+
+            if (!string.IsNullOrWhiteSpace(gameTitle))
+            {
+                postsQuery = postsQuery.Where(p => p.GameTitle.Contains(gameTitle));
+            }
+
+            if (!string.IsNullOrWhiteSpace(postType))
+            {
+                postsQuery = postsQuery.Where(p => p.PostType == postType);
+            }
+
+            var posts = await postsQuery
+                .OrderByDescending(p => p.CreatedAt)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return posts.Select(post => ToDto(post)).ToList();
+        }
+
         private static PostResponseDto ToDto(Post post, ApplicationUser? user = null)
         {
             if (user == null)
