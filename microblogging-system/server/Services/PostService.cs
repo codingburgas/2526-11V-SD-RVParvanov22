@@ -17,6 +17,7 @@ namespace MicrobloggingSystem.Services
 
         public async Task<IEnumerable<PostResponseDto>> GetPostsAsync(int pageNumber, int pageSize)
         {
+            // Public feed: only published posts, newest first.
             var posts = await _context.Posts
                 .Where(p => !p.IsDraft) // Only show published posts
                 .Include(p => p.User)
@@ -49,6 +50,7 @@ namespace MicrobloggingSystem.Services
                 throw new InvalidOperationException("User not found");
             }
 
+            // Drafts are saved without PublishedAt; published posts get a timestamp immediately.
             var post = new Post
             {
                 GameTitle = createPostDto.GameTitle,
@@ -83,7 +85,7 @@ namespace MicrobloggingSystem.Services
             post.MediaType = updatePostDto.MediaType ?? post.MediaType;
             post.IsDraft = updatePostDto.IsDraft;
 
-            // Set PublishedAt when transitioning from draft to published
+            // Preserve the original publish moment once a draft becomes visible in the feed.
             if (wasDraft && !updatePostDto.IsDraft && post.PublishedAt == null)
             {
                 post.PublishedAt = DateTime.UtcNow;
@@ -108,6 +110,7 @@ namespace MicrobloggingSystem.Services
 
         public async Task<IEnumerable<PostResponseDto>> GetFeedAsync(string userId, int pageNumber, int pageSize)
         {
+            // Personalized feed is built from followed authors plus the current user's own posts.
             var followedIds = await _context.Follows
                 .Where(f => f.FollowerId == userId)
                 .Select(f => f.FollowingId)
@@ -115,6 +118,7 @@ namespace MicrobloggingSystem.Services
 
             if (followedIds.Count == 0)
             {
+                // Fall back to the global feed when the user follows nobody yet.
                 return await GetPostsAsync(pageNumber, pageSize);
             }
 
@@ -140,7 +144,7 @@ namespace MicrobloggingSystem.Services
                 .Include(p => p.PostLikes)
                 .AsQueryable();
 
-            // Apply search filters
+            // Filters are applied incrementally so the same method can serve simple and advanced search.
             if (!string.IsNullOrWhiteSpace(query))
             {
                 postsQuery = postsQuery.Where(p =>
@@ -171,6 +175,7 @@ namespace MicrobloggingSystem.Services
 
         public async Task<IEnumerable<PostResponseDto>> GetDraftsAsync(string userId, int pageNumber = 1, int pageSize = 20)
         {
+            // Drafts stay private to their owner and are ordered by last creation time.
             var drafts = await _context.Posts
                 .Where(p => p.UserId == userId && p.IsDraft)
                 .Include(p => p.User)
@@ -192,6 +197,7 @@ namespace MicrobloggingSystem.Services
                 return false;
             }
 
+            // Publishing a draft moves it into the main feed.
             post.IsDraft = false;
             post.PublishedAt = DateTime.UtcNow;
             await _context.SaveChangesAsync();
@@ -205,6 +211,7 @@ namespace MicrobloggingSystem.Services
                 user = post.User;
             }
 
+            // DTOs expose only client-safe data and hide full entity graphs.
             return new PostResponseDto
             {
                 Id = post.Id,

@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using System.Security.Claims;
 using System.Text;
 using MicrobloggingSystem.Data;
 using MicrobloggingSystem.Models;
@@ -11,12 +10,12 @@ using MicrobloggingSystem.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add DbContext with SQLite
+// Persist application data in the local SQLite database.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString));
 
-// Add Identity
+// Identity handles MVC login plus role-based authorization.
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
     options.Password.RequiredLength = 6;
@@ -28,7 +27,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
-// Configure authentication schemes for MVC and API
+// JWT is used by the API endpoints; MVC relies on Identity.
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var secretKey = jwtSettings["SecretKey"];
 
@@ -47,7 +46,7 @@ builder.Services.AddAuthentication()
     };
 });
 
-// Register application services
+// Register business-layer services behind interfaces for DI.
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPostService, PostService>();
@@ -55,7 +54,7 @@ builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<ILikeService, LikeService>();
 builder.Services.AddScoped<IReportService, ReportService>();
 
-// Add CORS
+// Allow local frontend clients to call the API during development.
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowLocalhost", policy =>
@@ -82,10 +81,10 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Add MVC views and API controllers
+// The project serves both Razor views and JSON API controllers.
 builder.Services.AddControllersWithViews();
 
-// Add Swagger/OpenAPI
+// Swagger is exposed only in development.
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -118,6 +117,7 @@ app.MapControllerRoute(
 
 app.MapControllers();
 
+// Ensure the required roles exist before the first request is handled.
 await SeedRolesAndAdminAsync(app.Services);
 
 app.Run();
@@ -138,6 +138,7 @@ static async Task SeedRolesAndAdminAsync(IServiceProvider services)
         }
     }
 
+    // Seed a starter admin account only when the database has no users yet.
     if (!await userManager.Users.AnyAsync())
     {
         var adminEmail = "admin@microblog.com";

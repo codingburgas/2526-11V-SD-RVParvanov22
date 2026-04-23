@@ -34,6 +34,7 @@ namespace MicrobloggingSystem.Controllers
             if (User.Identity?.IsAuthenticated == true)
             {
                 var userId = currentUserId ?? string.Empty;
+                // Logged-in users see a personalized timeline instead of the global feed.
                 posts = await _postService.GetFeedAsync(userId, pageNumber, 20);
                 likedPostIds = await _context.PostLikes
                     .Where(l => l.UserId == userId)
@@ -49,6 +50,7 @@ namespace MicrobloggingSystem.Controllers
                 posts = await _postService.GetPostsAsync(pageNumber, 20);
             }
 
+            // Enrich each post card with current-user state used by the Razor view.
             var postCards = posts
                 .Select(post => new FeedPostViewModel
                 {
@@ -77,6 +79,7 @@ namespace MicrobloggingSystem.Controllers
 
         public async Task<IActionResult> Reports()
         {
+            // Top users are ranked by follower count for the dashboard report.
             var topUsers = await _context.Users
                 .Select(u => new TopUserViewModel
                 {
@@ -88,6 +91,7 @@ namespace MicrobloggingSystem.Controllers
                 .Take(5)
                 .ToListAsync();
 
+            // The most engaging post is the one with the highest likes + comments total.
             var popularPost = await _context.Posts
                 .Include(p => p.Comments)
                 .Include(p => p.PostLikes)
