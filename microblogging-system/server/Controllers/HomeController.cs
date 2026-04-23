@@ -99,11 +99,6 @@ namespace MicrobloggingSystem.Controllers
                 .OrderByDescending(p => (p.Comments!.Count + p.PostLikes!.Count))
                 .FirstOrDefaultAsync();
 
-            // Calculate average posts per user
-            var totalPosts = await _context.Posts.CountAsync();
-            var totalUsers = await _context.Users.CountAsync();
-            var averagePosts = totalUsers > 0 ? (double)totalPosts / totalUsers : 0;
-
             var model = new ReportsViewModel
             {
                 TopUsers = topUsers,
@@ -120,8 +115,7 @@ namespace MicrobloggingSystem.Controllers
                     UserId = popularPost.UserId,
                     UserDisplayName = popularPost.User?.DisplayName ?? popularPost.User?.UserName,
                     UserProfilePictureUrl = popularPost.User?.ProfilePictureUrl
-                },
-                AveragePostsPerUser = averagePosts
+                }
             };
 
             return View(model);
